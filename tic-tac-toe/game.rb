@@ -4,12 +4,7 @@ class Game
     def initialize
         @win_positions = [[1, 2, 3], [4, 5, 6], [7, 8, 9], [1, 4, 7],
                           [2, 5, 8], [3, 6, 9], [1, 5, 9], [7, 5, 3]]
-    end
-    def self.turn
-        current_player = current_player == player2 ? player1 : player2
-        puts "#{current_player.name}'s turn"
-        board.display
-        puts "Type the number of the box u want to play in"
+        @current_player = nil
     end
     def play
         puts "Welcome to this command line Ruby game of Tic Tac Toe!".center(20)
@@ -20,57 +15,63 @@ class Game
             @p1 = gets.chomp
             puts "Player Two, what's your name?"
             @p2 = gets.chomp
-            i = 0
-            while i == 0
+            loop do
                 puts "#{@p1}, what's your symbol, X or O?"
                 @p1_symbol = gets.chomp.upcase
                 next unless  @p1_symbol == "O" || @p1_symbol == "X"
                 @p2_symbol = @p1_symbol == "O" ? "X" : "O"
-                i = 1
+                break
             end
             puts "#{@p2}, your symbol is #{@p2_symbol}"
         end
-
         self.introduction
 
-        @plateau = Board.new
+        @@plateau = Board.new
         @player1 = Player.new(@p1, @p1_symbol)
         @player2 = Player.new(@p2, @p2_symbol)
-        current_player = @player2
-        puts won?
         until won? || tie?
         turn
         end
+        play_again?
     end
     def turn
-        current_player = current_player == @player2 ? @player1 : @player2
-        puts "#{current_player.name}'s turn"
-        @plateau.display
-        puts @plateau.board
-        puts "Type the number of the box u want to play in"
-        current_player.moves << gets.chomp
+        @current_player = @current_player == @player1 ? @player2 : @player1
+        puts "#{@current_player.name}'s turn"
+        @@plateau.display
+        loop do
+            puts "Type the number of the box u want to play in"
+            target = gets.chomp.to_i
+            next unless target.between?(1,9)
+            @current_player.moves << target
+            @@plateau.board[@current_player.moves[-1] - 1] = @current_player.symbol
+            break
+        end
     end
     ## Checking methods
     def won? 
         for i in @win_positions do
             if i.sort == @player1.moves.sort || i.sort == @player2.moves.sort
-                #puts "#{current_player.name} won! I hope you enjoyed your game :)"
-                #puts "Play again? Y/N"
+                puts "#{@current_player.name} won!!"
                 return true
             end
         end
         false
     end
     def occupied? position
-        @plateau.board[position - 1].is_a? Integer ? true : false
+        @@plateau.board[position - 1].class == Integer ? true : false
     end
     def tie?
-        @plateau.board.each {|i| i.is_a? Integer ? false : true}
+        status = true
+        @@plateau.board.each {|i| status = false if i.class == Integer}
+        puts "It's a tie! No one won" if status == true
+        return status
     end
-    
-    
-
-    
+    def play_again?
+        puts "Do you want to play again? Enter Y to play and anything else to stop"
+        answer = gets.chomp.upcase
+        Game.new.play if answer == "Y"
+        puts "All right! Have a good one" if answer != "Y"
+    end
 end
 require_relative "board"
 Game.new.play

@@ -1,6 +1,9 @@
 class Board
-    attr_reader :board
+    attr_accessor :board
     @@board = [1,2,3,4,5,6,7,8,9]
+    def board
+        @@board
+    end
     def display
         puts ""
         puts " #{@@board[0]} | #{@@board[1]} | #{@@board[2]}"
