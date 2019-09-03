@@ -1,6 +1,7 @@
 class Board
     attr_accessor :board
-    @@board = [1,2,3,4,5,6,7,8,9]
+    def initialize
+        @@board = [1,2,3,4,5,6,7,8,9]; end
     def board
         @@board
     end

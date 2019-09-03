@@ -39,9 +39,9 @@ class Game
         puts "#{@current_player.name}'s turn"
         @@plateau.display
         loop do
-            puts "Type the number of the box u want to play in"
+            puts "Type the number of the box you want to play in"
             target = gets.chomp.to_i
-            next unless target.between?(1,9)
+            next unless target.between?(1,9) && occupied?(target)
             @current_player.moves << target
             @@plateau.board[@current_player.moves[-1] - 1] = @current_player.symbol
             break
@@ -51,7 +51,7 @@ class Game
     def won? 
         for i in @win_positions do
             if i.sort == @player1.moves.sort || i.sort == @player2.moves.sort
-                puts "#{@current_player.name} won!!"
+                puts @@plateau.display, "\n #{@current_player.name} won!!"
                 return true
             end
         end
